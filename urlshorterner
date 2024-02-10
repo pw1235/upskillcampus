@@ -1,0 +1,44 @@
+import hashlib
+
+class URLShortener:
+    def __init__(self):
+        self.url_mapping = {}
+
+    def shorten_url(self, original_url):
+        # Generate a hash of the original URL
+        hash_object = hashlib.sha256(original_url.encode())
+        hash_hex = hash_object.hexdigest()
+
+        # Convert the hash to base62 for a shorter representation
+        short_url = self.base62_encode(int(hash_hex, 16))
+
+        # Store the mapping between short and original URL
+        self.url_mapping[short_url] = original_url
+
+        return short_url
+
+    def expand_url(self, short_url):
+        # Retrieve the original URL from the mapping
+        original_url = self.url_mapping.get(short_url)
+
+        return original_url
+
+    def base62_encode(self, num):
+        chars = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"
+        base62 = ""
+
+        while num > 0:
+            num, remainder = divmod(num, 62)
+            base62 = chars[remainder] + base62
+
+        return base62 or "0"
+
+# Example usage:
+url_shortener = URLShortener()
+
+original_url = "https://www.amazon.com/s?srs=11163361011"
+short_url = url_shortener.shorten_url(original_url)
+print(f"Shortened URL: {short_url}")
+
+expanded_url = url_shortener.expand_url(short_url)
+print(f"Expanded URL: {expanded_url}")
